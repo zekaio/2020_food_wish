@@ -127,7 +127,7 @@ def get_my_help(open_id: str) -> typing.List[dict]:
 
 
 # 助愿者确认已实现
-def helper_confirm_complete(wish_id: int) -> None:
+def helper_confirm_complete(wish_id: int, open_id: str) -> None:
     wish: models.Wishes = (
         models.Wishes
             .query
@@ -136,6 +136,10 @@ def helper_confirm_complete(wish_id: int) -> None:
     )
     if not wish:
         abort(404, message="愿望不存在")
+    if wish.helper_openid != str(open_id):
+        abort(406, message="这个愿望不是你领取的")
+    if wish.status != 1:
+        abort(409, message="愿望未被领取或已确认实现")
     wish.status = 2
     models.db.session.add(wish)
     models.db.session.commit()
@@ -143,7 +147,7 @@ def helper_confirm_complete(wish_id: int) -> None:
 
 
 # 许愿者确认已完成
-def wisher_confirm_complete(wish_id: int) -> None:
+def wisher_confirm_complete(wish_id: int, open_id: str) -> None:
     wish: models.Wishes = (
         models.Wishes
             .query
@@ -152,6 +156,10 @@ def wisher_confirm_complete(wish_id: int) -> None:
     )
     if not wish:
         abort(404, message="愿望不存在")
+    if wish.open_id != str(open_id):
+        abort(406, message="这个愿望不是你许的")
+    if wish.status != 2:
+        abort(409, message="助愿者还未确认已实现")
     wish.status = 3
     wisher = get_user(wish.open_id)
     helper = get_user(wish.helper_openid)
@@ -166,7 +174,7 @@ def wisher_confirm_complete(wish_id: int) -> None:
 
 
 # 放弃愿望
-def giveup_wish(wish_id: int) -> None:
+def giveup_wish(wish_id: int, open_id: str) -> None:
     wish: models.Wishes = (
         models.Wishes
             .query
@@ -175,6 +183,10 @@ def giveup_wish(wish_id: int) -> None:
     )
     if not wish:
         abort(404, message="愿望不存在")
+    if wish.helper_openid != str(open_id):
+        abort(406, message="这个愿望不是你领取的")
+    if wish.status != 1 or wish.status != 2:
+        abort(409, message="愿望未被领取或已确认实现")
     wish.status = 0
     wish.helper_openid = None
     models.db.session.add(wish)
@@ -196,7 +208,7 @@ def get_lottery_process(open_id: str):
 
 
 # 获取帖子
-def get_posts(last: int = 0, limit: int = 5) -> typing.List[dict]:
+def get_posts(last: int, limit: int) -> typing.List[dict]:
     if not last:
         posts: typing.List[models.Posts] = (
             models.Posts
@@ -230,7 +242,7 @@ def get_posts(last: int = 0, limit: int = 5) -> typing.List[dict]:
 
 
 # 发表帖子
-def send_post(data: dict, pics: list = None) -> None:
+def send_post(data: dict, pics: list) -> None:
     user = get_user(data['open_id'])
     if not user.post:
         abort(406, message="发帖次数已用完")
