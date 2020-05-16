@@ -16,6 +16,8 @@
 
 ## 仅测试
 
+####  baseurl=`https://zekaio.cn/2020/food_wish/api`
+
 ### /set_open_id
 
 **请求方法 POST**
