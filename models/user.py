@@ -7,6 +7,7 @@ class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     open_id = db.Column(db.Text, nullable=False)
+    username = db.Column(db.Text, nullable=True, default=None)
     update_day = db.Column(db.Date, default=datetime.date.today())
     help = db.Column(db.Integer, nullable=False, default=3)
     wish = db.Column(db.Integer, nullable=False, default=3)
@@ -18,5 +19,7 @@ class User(db.Model):
             help=self.help,
             wish=self.wish,
             lottery=self.lottery,
-            post=self.post
+            post=self.post,
+            username=self.username,
+            has_username=bool(self.username)
         )

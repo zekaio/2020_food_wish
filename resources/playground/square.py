@@ -19,7 +19,7 @@ class Square(Resource):
 
     # 广场，发帖
     def post(self):
-        data = request.get_json(force=True)
+        data: dict = request.get_json(force=True)
         pics_path = list()
         if data.get('pics_id'):
             for pic_id in data['pics_id']:
@@ -46,5 +46,5 @@ class Square(Resource):
                     current_app.logger.error(t['errMsg'])
                     abort(412, message="服务器下载图片失败")
                     return
-        send_post(dict(open_id=session['open_id'], name=data['name'], content=data['content']), pics_path)
+        send_post(dict(open_id=session['open_id'], content=data['content']), pics_path)
         return

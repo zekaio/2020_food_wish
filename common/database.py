@@ -5,6 +5,7 @@ import datetime
 import models
 from sqlalchemy.sql.expression import func
 import typing
+import random
 
 
 # 获取user对象
@@ -17,6 +18,8 @@ def get_user(open_id: str) -> models.User:
     )
     if not user:
         user: models.User = models.User(open_id=open_id)
+        lott: models.Lottery = models.Lottery(open_id=open_id)
+        models.db.session.add(lott)
         models.db.session.add(user)
         models.db.session.commit()
     elif user.update_day < datetime.date.today():
@@ -198,16 +201,55 @@ def giveup_wish(wish_id: int, open_id: str) -> None:
 
 
 # 抽奖
-def lottery(open_id: str) -> None:
+def lottery(open_id: str):
     user = get_user(open_id)
     if not user.lottery:
         abort(406, message="抽奖次数已用完")
-    return
+        return
+    lott: models.Lottery = (
+        models.Lottery
+            .query
+            .filter(models.Lottery.open_id == open_id)
+            .first()
+    )
+    incomplete: dict = lott.get_incomplete()
+    if len(incomplete) == 0:
+        abort(409, message="图鉴已集齐")
+    key = list(incomplete)[random.randint(0, len(incomplete) - 1)]
+    setattr(lott, 'food' + str(int(key) + 1), int(getattr(lott, 'food' + str(int(key) + 1))) + 1)
+    user.lottery = user.lottery - 1
+    models.db.session.add(user)
+    models.db.session.add(lott)
+    models.db.session.commit()
+    return key
 
 
 # 获取抽奖进度
-def get_lottery_process(open_id: str):
-    pass
+def get_lottery_process(open_id: str) -> list:
+    lott: models.Lottery = (
+        models.Lottery
+            .query
+            .filter(models.Lottery.open_id == open_id)
+            .first()
+    )
+    if not lott:
+        get_user(open_id)
+        ret = [0 for _ in range(8)]
+    else:
+        ret = lott.to_list()
+    return ret
+
+
+# 设置昵称
+def set_username(username: str, open_id: str) -> None:
+    user = get_user(open_id)
+    if user.username:
+        abort(406, message="已设置过昵称")
+        return
+    user.username = username
+    models.db.session.add(user)
+    models.db.session.commit()
+    return
 
 
 # 获取帖子
@@ -249,6 +291,11 @@ def send_post(data: dict, pics: list) -> None:
     user = get_user(data['open_id'])
     if not user.post:
         abort(406, message="发帖次数已用完")
+        return
+    if not user.username:
+        abort(404, message="请先填写昵称")
+        return
+    data['name'] = user.username
     post = models.Posts(**data)
     user.lottery = user.lottery + 1
     user.post = user.post - 1
