@@ -6,7 +6,6 @@ import json
 
 
 def check_wechat_login() -> None:
-    print('wechat')
     if 'open_id' not in session:
         phpsessid = request.cookies.get('PHPSESSID')
         if phpsessid is not None:

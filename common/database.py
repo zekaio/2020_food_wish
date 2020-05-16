@@ -91,8 +91,15 @@ def help_wish(wish_id: int, open_id: str) -> None:
             .filter(models.Wishes.id == wish_id)
             .first()
     )
+    if not wish:
+        abort(404, message="愿望不存在")
+        return
     if wish.status:
         abort(404, message="愿望已被其他人领取")
+        return
+    if wish.open_id == str(open_id):
+        abort(412, message="无法帮助自己的愿望")
+        return
     wish.helper_openid = open_id
     wish.status = 1
     user.help = user.help - 1
@@ -189,7 +196,7 @@ def giveup_wish(wish_id: int, open_id: str) -> None:
         abort(404, message="愿望不存在")
     if wish.helper_openid != str(open_id):
         abort(406, message="这个愿望不是你领取的")
-    if wish.status != 1 or wish.status != 2:
+    if wish.status != 1 and wish.status != 2:
         abort(409, message="愿望未被领取或已确认实现")
     wish.status = 0
     wish.helper_openid = None

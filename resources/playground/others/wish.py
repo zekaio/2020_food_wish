@@ -9,7 +9,7 @@ class Wish(Resource):
     def get(self):
         limit = request.args.get('limit')
         ret = get_random_wish(session['open_id'], limit) if limit else get_random_wish(session['open_id'])
-        return ret
+        return dict(wishes=ret)
 
     # 助愿页面，选择帮助TA
     def post(self):

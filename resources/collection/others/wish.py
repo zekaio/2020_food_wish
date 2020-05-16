@@ -7,7 +7,7 @@ from common.database import get_my_help, giveup_wish, helper_confirm_complete
 class Wish(Resource):
     # 我的助愿，获取所有愿望
     def get(self):
-        return get_my_help(session['open_id'])
+        return dict(wishes=get_my_help(session['open_id']))
 
     # 我的助愿，我已实现/放弃
     def post(self):
