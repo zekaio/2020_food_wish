@@ -58,6 +58,7 @@ def make_wish(data: dict) -> None:
         return
     wish: models.Wishes = models.Wishes(**data)
     user.wish = user.wish - 1
+    user.lottery = user.lottery + 1
     models.db.session.add(wish)
     models.db.session.add(user)
     models.db.session.commit()
@@ -163,7 +164,6 @@ def wisher_confirm_complete(wish_id: int, open_id: str) -> None:
     wish.status = 3
     wisher = get_user(wish.open_id)
     helper = get_user(wish.helper_openid)
-    wisher.lottery = wisher.lottery + 1
     wisher.post = wisher.post + 1
     helper.lottery = helper.lottery + 1
     models.db.session.add(wisher)
@@ -175,6 +175,7 @@ def wisher_confirm_complete(wish_id: int, open_id: str) -> None:
 
 # 放弃愿望
 def giveup_wish(wish_id: int, open_id: str) -> None:
+    user = get_user(open_id)
     wish: models.Wishes = (
         models.Wishes
             .query
@@ -189,6 +190,8 @@ def giveup_wish(wish_id: int, open_id: str) -> None:
         abort(409, message="愿望未被领取或已确认实现")
     wish.status = 0
     wish.helper_openid = None
+    user.help = user.help + 1
+    models.db.session.add(user)
     models.db.session.add(wish)
     models.db.session.commit()
     return
@@ -247,6 +250,9 @@ def send_post(data: dict, pics: list) -> None:
     if not user.post:
         abort(406, message="发帖次数已用完")
     post = models.Posts(**data)
+    user.lottery = user.lottery + 1
+    user.post = user.post - 1
+    models.db.session.add(user)
     models.db.session.add(post)
     models.db.session.commit()
     if pics:
