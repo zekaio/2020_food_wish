@@ -38,7 +38,7 @@ def get_user_info(open_id: str) -> dict:
 
 
 # 随机抽取愿望，默认三条
-def get_random_wish(open_id: str, limit: int = 3) -> typing.List[dict]:
+def get_random_wish(open_id: str, limit: int) -> typing.List[dict]:
     wishes: typing.List[models.Wishes] = (
         models.Wishes
             .query

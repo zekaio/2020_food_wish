@@ -7,8 +7,8 @@ from common.database import get_random_wish, help_wish
 class Wish(Resource):
     # 助愿页面，抽取愿望
     def get(self):
-        limit = request.args.get('limit')
-        ret = get_random_wish(session['open_id'], limit) if limit else get_random_wish(session['open_id'])
+        limit = request.args.get('limit') or 3
+        ret = get_random_wish(session['open_id'], limit)
         return dict(wishes=ret)
 
     # 助愿页面，选择帮助TA

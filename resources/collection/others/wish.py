@@ -12,7 +12,7 @@ class Wish(Resource):
     # 我的助愿，我已实现/放弃
     def post(self):
         data = request.get_json(force=True)
-        if data['status']:
+        if int(data['status']):
             helper_confirm_complete(data['id'], session['open_id'])
         else:
             giveup_wish(data['id'], session['open_id'])
