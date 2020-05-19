@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from flask import session
 from flask_restful import abort
 import datetime
 import models
 from sqlalchemy.sql.expression import func
 import typing
 import random
+from common.utils import download_images
 
 
 # 获取user对象
@@ -47,7 +47,7 @@ def get_random_wish(open_id: str, limit: int = 3) -> typing.List[dict]:
             .limit(limit)
             .all()
     )
-    ret: list = list()
+    ret = []
     for wish in wishes:
         ret.append(wish.to_dict())
     return ret
@@ -117,7 +117,7 @@ def get_my_wishes(open_id: str) -> typing.List[dict]:
             .filter(models.Wishes.open_id == open_id)
             .all()
     )
-    ret: list = list()
+    ret = []
     for wish in wishes:
         ret.append(wish.to_dict())
     return ret
@@ -131,7 +131,7 @@ def get_my_help(open_id: str) -> typing.List[dict]:
             .filter(models.Wishes.helper_openid == open_id)
             .all()
     )
-    ret: list = list()
+    ret = []
     for wish in wishes:
         ret.append(wish.to_dict())
     return ret
@@ -278,12 +278,12 @@ def get_posts(last: int, limit: int) -> typing.List[dict]:
                 .limit(limit)
                 .all()
         )
-    ret: list = list()
+    ret = []
     for post in posts:
         d: dict = post.to_dict()
         pics: typing.List[models.Pics] = post.pics
         if pics:
-            pics_path: list = list()
+            pics_path = []
             for pic in pics:
                 pics_path.append(pic.path)
             d['pics'] = pics_path
@@ -294,16 +294,20 @@ def get_posts(last: int, limit: int) -> typing.List[dict]:
 
 
 # 发表帖子
-def send_post(data: dict, pics: list) -> None:
-    user = get_user(data['open_id'])
+def send_post(open_id: str, data: dict) -> None:
+    user = get_user(open_id)
     if not user.post:
         abort(406, message="发帖次数已用完")
         return
     if not user.username:
         abort(404, message="请先填写昵称")
         return
-    data['name'] = user.username
-    post = models.Posts(**data)
+    pics = download_images(data.get('pics_id') or [])
+    post = models.Posts(
+        open_id=open_id,
+        name=user.username,
+        content=data.get('content')
+    )
     user.lottery = user.lottery + 1
     user.post = user.post - 1
     models.db.session.add(user)

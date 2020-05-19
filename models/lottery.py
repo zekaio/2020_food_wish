@@ -19,8 +19,8 @@ class Lottery(db.Model):
         return [self.food1, self.food2, self.food3, self.food4, self.food5, self.food6, self.food7, self.food8]
 
     def get_incomplete(self) -> dict:
-        l = dict()
+        d = {}
         for i, val in enumerate(self.to_list()):
             if val != 3:
-                l[i] = val
-        return l
+                d[i] = val
+        return d
