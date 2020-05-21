@@ -83,7 +83,6 @@
 
 | 参数名  | 类型   | 说明               |
 | ------- | ------ | ------------------ |
-| title   | string | 许愿文案           |
 | content | string | 许愿内容           |
 | paper   | int    | 选择的信纸对应的id |
 | name    | string | 姓名               |
@@ -94,7 +93,6 @@
 
 ```json
 {
-    "title": "许愿文案",
     "content": "许愿内容",
     "paper": 1,
     "name": "姓名",
@@ -136,7 +134,6 @@
 | name    | string | 许愿者姓名                                                   |
 | tel     | string | 许愿者电话                                                   |
 | wechat  | string | 许愿者微信                                                   |
-| title   | string | 愿望文案                                                     |
 | content | string | 愿望内容                                                     |
 | status  | int    | 0：未被人帮助，1：被人帮助但是还未完成，2：已完成未确认，3：完成并已确认 |
 | paper   | int    | 信纸id                                                       |
@@ -151,7 +148,6 @@
             "name": "姓名",
             "wechat": "微信号",
             "tel": "电话号码",
-            "title": "愿望文案",
             "content": "愿望内容",
             "status":0,
             "paper": 2
@@ -161,7 +157,6 @@
             "name": "姓名",
             "wechat": "微信号",
             "tel": "电话号码",
-            "title": "愿望文案",
             "content": "愿望内容",
             "status":0,
             "paper": 2
@@ -214,7 +209,6 @@
 | name    | string | 许愿者姓名                                                   |
 | tel     | string | 许愿者电话                                                   |
 | wechat  | string | 许愿者微信                                                   |
-| title   | string | 愿望文案                                                     |
 | content | string | 愿望内容                                                     |
 | status  | int    | 0：未被人帮助，1：被人帮助但是还未完成，2：已完成未确认，3：完成并已确认 |
 | paper   | int    | 信纸id                                                       |
@@ -229,7 +223,6 @@
             "name": "姓名",
             "wechat": "微信号",
             "tel": "电话号码",
-            "title": "愿望文案",
             "content": "愿望内容",
             "status":0,
             "paper": 2
@@ -239,7 +232,6 @@
             "name": "姓名",
             "wechat": "微信号",
             "tel": "电话号码",
-            "title": "愿望文案",
             "content": "愿望内容",
             "status":0,
             "paper": 2
@@ -292,7 +284,6 @@
 | name    | string | 许愿者姓名                                                   |
 | tel     | string | 许愿者电话                                                   |
 | wechat  | string | 许愿者微信                                                   |
-| title   | string | 愿望文案                                                     |
 | content | string | 愿望内容                                                     |
 | status  | int    | 0：未被人帮助，1：被人帮助但是还未完成，2：已完成未确认，3：完成并已确认 |
 | paper   | int    | 信纸id                                                       |
@@ -307,7 +298,6 @@
             "name": "姓名",
             "wechat": "微信号",
             "tel": "电话号码",
-            "title": "愿望文案",
             "content": "愿望内容",
             "status":0,
             "paper": 2
@@ -317,7 +307,6 @@
             "name": "姓名",
             "wechat": "微信号",
             "tel": "电话号码",
-            "title": "愿望文案",
             "content": "愿望内容",
             "status":0,
             "paper": 2
