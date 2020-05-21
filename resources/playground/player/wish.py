@@ -9,10 +9,14 @@ class Wish(Resource):
     # 许愿页面，许愿
     def post(self):
         data: dict = request.get_json(force=True)
-        if not (data.get('tel') or data.get('wechat')):
+        tel = data.get('tel') if data.get('tel') else ''
+        wechat = data.get('wechat') if data.get('wechat') else ''
+        if not data.get('content'):
+            abort(412, message='请填写许愿内容')
+        if not (tel or wechat):
             abort(412, message="请填写手机号或微信号")
-        if data.get('tel'):
-            check_tel(data['tel'])
-        data['open_id'] = session['open_id']
-        make_wish(data)
+        if tel:
+            check_tel(tel)
+        make_wish(dict(open_id=session['open_id'], tel=tel, wechat=wechat, content=data.get('content'),
+                       paper=data.get('paper'), name=data.get('name')))
         return
