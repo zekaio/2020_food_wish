@@ -18,17 +18,5 @@ collection_api.init_app(app)
 
 app.before_request(before_request)
 
-"""
-for test
-"""
-
-
-@app.route('/set_open_id', methods=['post'])
-def openid():
-    from flask import session, request
-    session['open_id'] = request.get_json(force=True)['openid']
-    return str(session['open_id'])
-
-
 if __name__ == '__main__':
     app.run()
