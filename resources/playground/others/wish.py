@@ -8,8 +8,7 @@ class Wish(Resource):
     # 助愿页面，抽取愿望
     def get(self):
         limit = request.args.get('limit') or 3
-        ret = get_random_wish(session['open_id'], limit)
-        return dict(wishes=ret)
+        return get_random_wish(session['open_id'], limit)
 
     # 助愿页面，选择帮助TA
     def post(self):

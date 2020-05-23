@@ -9,7 +9,7 @@ class Square(Resource):
     def get(self):
         offset = request.args.get('offset')
         limit = request.args.get('limit') or 5
-        return dict(posts=get_posts(offset, limit))
+        return get_posts(offset, limit)
 
     # 广场，发帖
     def post(self):

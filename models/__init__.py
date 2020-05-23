@@ -9,3 +9,4 @@ from .pics import Pics
 from .posts import Posts
 from .wishes import Wishes
 from .user import User
+from .info import Info

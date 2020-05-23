@@ -24,3 +24,6 @@ class Lottery(db.Model):
             if val != 3:
                 d[i] = val
         return d
+
+    def is_finished(self) -> bool:
+        return bool(not len(self.get_incomplete()))

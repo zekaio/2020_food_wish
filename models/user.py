@@ -13,6 +13,7 @@ class User(db.Model):
     wish = db.Column(db.Integer, default=3)
     lottery = db.Column(db.Integer, default=0)
     post = db.Column(db.Integer, default=0)
+    has_info = db.Column(db.Boolean, default=False)
 
     def to_dict(self):
         return dict(
@@ -21,5 +22,6 @@ class User(db.Model):
             lottery=self.lottery,
             post=self.post,
             username=self.username,
-            has_username=bool(self.username)
+            has_username=bool(self.username),
+            has_info=self.has_info
         )

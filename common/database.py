@@ -38,7 +38,7 @@ def get_user_info(open_id: str) -> dict:
 
 
 # 随机抽取愿望，默认三条
-def get_random_wish(open_id: str, limit: int) -> typing.List[dict]:
+def get_random_wish(open_id: str, limit: int) -> dict:
     wishes: typing.List[models.Wishes] = (
         models.Wishes
             .query
@@ -50,7 +50,7 @@ def get_random_wish(open_id: str, limit: int) -> typing.List[dict]:
     ret = []
     for wish in wishes:
         ret.append(wish.to_dict())
-    return ret
+    return dict(wishes=ret)
 
 
 # 许愿
@@ -110,7 +110,7 @@ def help_wish(wish_id: int, open_id: str) -> None:
 
 
 # 收藏夹，获取我的愿望
-def get_my_wishes(open_id: str) -> typing.List[dict]:
+def get_my_wishes(open_id: str) -> dict:
     wishes: typing.List[models.Wishes] = (
         models.Wishes
             .query
@@ -120,11 +120,11 @@ def get_my_wishes(open_id: str) -> typing.List[dict]:
     ret = []
     for wish in wishes:
         ret.append(wish.to_dict())
-    return ret
+    return dict(wishes=ret)
 
 
 # 收藏夹，获取我的助愿
-def get_my_help(open_id: str) -> typing.List[dict]:
+def get_my_help(open_id: str) -> dict:
     wishes: typing.List[models.Wishes] = (
         models.Wishes
             .query
@@ -134,7 +134,7 @@ def get_my_help(open_id: str) -> typing.List[dict]:
     ret = []
     for wish in wishes:
         ret.append(wish.to_dict())
-    return ret
+    return dict(wishes=ret)
 
 
 # 助愿者确认已实现
@@ -208,11 +208,11 @@ def giveup_wish(wish_id: int, open_id: str) -> None:
 
 
 # 抽奖
-def lottery(open_id: str):
+def lottery(open_id: str) -> dict:
     user = get_user(open_id)
     if not user.lottery:
         abort(406, message="抽奖次数已用完")
-        return
+        return {}
     lott: models.Lottery = (
         models.Lottery
             .query
@@ -228,23 +228,48 @@ def lottery(open_id: str):
     models.db.session.add(user)
     models.db.session.add(lott)
     models.db.session.commit()
-    return key
+    return dict(section=key)
 
 
 # 获取抽奖进度
-def get_lottery_process(open_id: str) -> list:
+def get_lottery_process(open_id: str) -> dict:
     lott: models.Lottery = (
         models.Lottery
             .query
             .filter(models.Lottery.open_id == open_id)
             .first()
     )
+    is_finished = False
     if not lott:
         get_user(open_id)
-        ret = [0 for _ in range(8)]
+        progress: list = [0 for _ in range(8)]
     else:
-        ret = lott.to_list()
-    return ret
+        progress: list = lott.to_list()
+        is_finished: bool = lott.is_finished()
+    return dict(progress=progress, is_finished=is_finished)
+
+
+# 抽奖，集齐后收集个人信息
+def set_info(open_id: str, data: dict) -> None:
+    user: models.User = get_user(open_id)
+    if user.has_info:
+        abort(409, message="已经填写过信息了")
+        return
+    lott: models.Lottery = (
+        models.Lottery
+            .query
+            .filter(models.Lottery.open_id == open_id)
+            .first()
+    )
+    if not lott.is_finished():
+        abort(406, message="图鉴还未集齐")
+        return
+    info: models.Info = models.Info(open_id=open_id, **data)
+    user.has_info = True
+    models.db.session.add(info)
+    models.db.session.add(user)
+    models.db.session.commit()
+    return
 
 
 # 设置昵称
@@ -260,7 +285,7 @@ def set_username(username: str, open_id: str) -> None:
 
 
 # 获取帖子
-def get_posts(last: int, limit: int) -> typing.List[dict]:
+def get_posts(last: int, limit: int) -> dict:
     if not last:
         posts: typing.List[models.Posts] = (
             models.Posts
@@ -290,7 +315,7 @@ def get_posts(last: int, limit: int) -> typing.List[dict]:
         else:
             d['pics'] = []
         ret.append(d)
-    return ret
+    return dict(posts=ret)
 
 
 # 发表帖子

@@ -7,7 +7,7 @@ from common.database import get_my_wishes, wisher_confirm_complete
 class Wish(Resource):
     # 我的许愿，获取所有愿望
     def get(self):
-        return dict(wishes=get_my_wishes(session['open_id']))
+        return get_my_wishes(session['open_id'])
 
     # 我的许愿，确认愿望已被完成
     def post(self):
